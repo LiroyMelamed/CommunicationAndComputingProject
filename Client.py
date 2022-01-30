@@ -1,10 +1,10 @@
-import Tkinter
 import socket
 import threading
-import tkSimpleDialog as simpledialog
-from Tkinter import *
+import tkinter
+import tkinter.scrolledtext
+from tkinter import simpledialog
 
-HOST = '10.0.0.12'
+HOST = '127.0.0.1'
 PORT = 55000
 
 
@@ -14,7 +14,7 @@ class Client:
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.connect((host, port))
 
-        msg = Tkinter.Tk()  # The window of the dialog
+        msg = tkinter.Tk()
         msg.withdraw()
 
         self.nickname = simpledialog.askstring("Nickname", "Please choose a nickname", parent=msg)
@@ -29,25 +29,25 @@ class Client:
         receive_thread.start()
 
     def gui_loop(self):
-        self.win = Tkinter.Tk()
+        self.win = tkinter.Tk()
         self.win.configure(bg="lightgray")
 
-        self.chat_label = Tkinter.Label(self.win, text="Chat:", bg="lightgray")
+        self.chat_label = tkinter.Label(self.win, text="Chat:", bg="lightgray")
         self.chat_label.config(font=("Arial", 12))
         self.chat_label.pack(padx=20, pady=5)
 
-        self.text_area = Tkinter.scrolledtext.ScrolledText(self.win)
+        self.text_area = tkinter.scrolledtext.ScrolledText(self.win)
         self.text_area.pack(padx=20, pady=5)
         self.text_area.config(state='disabled')
 
-        self.msg_label = Tkinter.Label(self.win, text="Message:", bg="lightgray")
-        self.chat_label.config(font=("Arial", 12))
-        self.chat_label.pack(padx=20, pady=5)
+        self.msg_label = tkinter.Label(self.win, text="Message:", bg="lightgray")
+        self.msg_label.config(font=("Arial", 12))
+        self.msg_label.pack(padx=20, pady=5)
 
-        self.input_area = Tkinter.Text(self.win, height=3)
+        self.input_area = tkinter.Text(self.win, height=3)
         self.input_area.pack(padx=20, pady=5)
 
-        self.send_btn = Tkinter.Button(self.win, text="Send", command=self.write)
+        self.send_btn = tkinter.Button(self.win, text="Send", command=self.write)
         self.send_btn.config(font=("Arial", 12))
         self.send_btn.pack(padx=20, pady=5)
 
@@ -58,7 +58,7 @@ class Client:
         self.win.mainloop()
 
     def write(self):
-        message = "{self.nickname}: {self.input_area.get('1.0', 'end')}"
+        message = f"{self.nickname}: {self.input_area.get('1.0', 'end')}"
         self.sock.send(message.encode('utf-8'))
         self.input_area.delete('1.0', 'end')
 
@@ -80,6 +80,8 @@ class Client:
                         self.text_area.insert('end', message)
                         self.text_area.yview('end')
                         self.text_area.config(state='disabled')
+            except ConnectionAbortedError:
+                break
             except:
                 print("Error")
                 self.sock.close()
