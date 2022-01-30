@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST ='10.0.0.12'
+HOST = '10.0.0.12'
 PORT = 55000
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,15 +12,16 @@ server.listen()
 clients = []
 nicknames = []
 
+
 def broadcast(message):
     for client in clients:
-        client.send(message) # Sending message to all connected client
+        client.send(message)  # Sending message to all connected client
+
 
 def handle(client):
     while True:
         try:
             message = client.recv(1024)
-            print(f"{nicknames[client.index(client)]} : {message}")
             broadcast(message)
         except:
             index = client.index(client)
@@ -30,12 +31,13 @@ def handle(client):
             nicknames.remove(nickname)
             break
 
+
 def receive():
     while True:
-        client, address = server.accept() # Accept new connection
+        client, address = server.accept()  # Accept new connection
         print(f"Connected with {str(address)}!")
 
-        client.send("NICK".encode('utf-8'))
+        client.send("NICK")
         nickname = client.recv(1024)
 
         nickname.append(nickname)
@@ -47,5 +49,6 @@ def receive():
         thread = threading.Thread(target=handle, args=(client,))
         thread.start()
 
-print ("Server running")
+
+print("The server is running...")
 receive()
